@@ -44,13 +44,15 @@ jobs:
         run: |
           docker build --build-arg=REACT_APP_MOVIE_API_URL=http://localhost:5000 -t ${{ vars.ECR_REGISTRY }}/frontend:${{ github.sha }} .
           docker tag ${{ vars.ECR_REGISTRY }}/frontend:${{ github.sha }} ${{ vars.ECR_REGISTRY }}/frontend:latest
+
       - name: Log in to Amazon ECR
         id: login-ecr
-        uses: aws-actions/amazon-ecr-login@v2
+        uses: aws-actions/amazon-ecr-login@v1
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           region: us-east-1  # Specify the correct AWS region
+
       - name: Push Docker Image to ECR
         run: |
           docker push ${{ vars.ECR_REGISTRY }}/frontend:${{ github.sha }}
