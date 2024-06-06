@@ -50,6 +50,7 @@ jobs:
           registry: ${{ vars.ECR_REGISTRY }}
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: us-east-1
       - name: Push Docker Image to ECR
         run: |
           docker push ${{ vars.ECR_REGISTRY }}/frontend:${{ github.sha }}
