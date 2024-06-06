@@ -39,7 +39,6 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
-        with:
       - name: Use Node.js 18.x
         uses: actions/setup-node@v3
         with:
@@ -61,6 +60,5 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
-        with:       
       - name: Build frontend
         run: npm run build
