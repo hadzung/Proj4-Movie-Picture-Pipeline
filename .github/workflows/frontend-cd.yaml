@@ -61,3 +61,14 @@ jobs:
         run: |
           docker push ${{ vars.ECR_REGISTRY }}/frontend:${{ github.sha }}
           docker push ${{ vars.ECR_REGISTRY }}/frontend:latest
+      - name: Connect to EKS Cluster
+        run: aws eks update-kubeconfig --name cluster --region us-east-1
+
+      - name: Set the image tag to the newer version
+        run: |
+          cd k8s
+          kustomize edit set image frontend=${{ vars.ECR_REGISTRY }}/frontend:latest
+
+      - name: Apply the manifests to the cluster
+        run: |
+          kubectl kustomize k8s | kubectl apply -f -
