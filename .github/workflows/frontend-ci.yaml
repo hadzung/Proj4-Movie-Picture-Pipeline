@@ -31,7 +31,7 @@ jobs:
       - name: Install dependencies
         run: npm ci
       - name: Run eslint
-        run: npm run lint
+        run: npm run lint #To simulate linting errors, you can run the linting command like so: FAIL_LINT=true npm run lint
 
   test:
     name: Testing
@@ -51,7 +51,8 @@ jobs:
       - name: Install dependencies
         run: npm ci
       - name: Run tests
-        run: npm test
+        run: npm test #To simulate a failure in the test coverage, which will be needed to ensure your CI/CD pipeline fails on bad tests, set the MOVIE_HEADING variable before the command FAIL_TEST=true CI=true npm test
+
 
   build:
     name: Building
