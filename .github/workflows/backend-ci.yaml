@@ -22,7 +22,9 @@ jobs:
       - name: Install pipevn
         run: pip install --user --upgrade pipenv
       - name: Install depedencies
-        run: pipenv install
+        run: |
+          python3 -m pip install flake8
+          pipenv install
       - name: Run lint
         run: pipenv run lint
 
