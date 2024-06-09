@@ -1,0 +1,67 @@
+name: Backend Continuous Deployment
+
+on:
+  # Manual trigger using the workflow_dispatch event
+  workflow_dispatch:
+  push:
+    branches:
+      - main # Trigger only when push to main branch
+    paths:
+      - 'backend/**'  # Trigger only when changes occur in the backend application
+
+defaults:
+  run:
+    working-directory: ./backend
+jobs:
+  test:
+    name: Testing
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+      - name: Install pipevn
+        run: pip install --user --upgrade pipenv
+      - name: Install dependencies
+        run: pipenv install
+      - name: Run tests
+        run: pipenv run test
+
+  deploy:
+    name: Building
+    runs-on: ubuntu-latest
+    needs: [test]
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Build Docker image
+        run: |
+          docker build -t ${{ vars.ECR_REGISTRY }}/backend:${{ github.sha }} .
+          docker tag ${{ vars.ECR_REGISTRY }}/backend:${{ github.sha }} ${{ vars.ECR_REGISTRY }}/backend:latest
+          
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v2
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: us-east-1
+
+      - name: Log in to Amazon ECR
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v2
+      
+      - name: Push Docker Image to ECR
+        run: |
+          docker push ${{ vars.ECR_REGISTRY }}/backend:${{ github.sha }}
+          docker push ${{ vars.ECR_REGISTRY }}/backend:latest
+      - name: Connect to EKS Cluster
+        run: aws eks update-kubeconfig --name cluster --region us-east-1
+
+      - name: Set the image tag to the newer version
+        run: |
+          cd k8s
+          kustomize edit set image frontend=${{ vars.ECR_REGISTRY }}/backend:latest
+
+      - name: Apply the manifests to the cluster
+        run: |
+          kubectl kustomize k8s | kubectl apply -f -
