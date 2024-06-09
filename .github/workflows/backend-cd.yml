@@ -60,7 +60,7 @@ jobs:
       - name: Set the image tag to the newer version
         run: |
           cd k8s
-          kustomize edit set image frontend=${{ vars.ECR_REGISTRY }}/backend:latest
+          kustomize edit set image backend=${{ vars.ECR_REGISTRY }}/backend:latest
 
       - name: Apply the manifests to the cluster
         run: |
