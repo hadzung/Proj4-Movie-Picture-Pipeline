@@ -19,6 +19,8 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
+      - name: Install pipevn
+        run: pip install --user --upgrade pipenv
       - name: Install depedencies
         run: pipenv install
       - name: Run lint
