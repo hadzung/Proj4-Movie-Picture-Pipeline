@@ -26,8 +26,7 @@ jobs:
           python3 -m pip install flake8
           pipenv install
       - name: Run lint
-        run: pipenv run lint
-
+        run: pipenv run lint #To simulate linting errors, you can run the linting command: pipenv run lint-fail
 
   test:
     name: Testing
@@ -40,7 +39,7 @@ jobs:
       - name: Install dependencies
         run: pipenv install
       - name: Run tests
-        run: pipenv run test
+        run: pipenv run test #To simulate failing the backend tests, run the following command FAIL_TEST=true pipenv run test
 
   build:
     name: Building
